@@ -474,7 +474,7 @@ def _concat_sparse(to_concat, axis=0, typs=None):
     to_concat = [
         x
         if isinstance(x, SparseArray)
-        else SparseArray(x.squeeze(), fill_value=fill_value)
+        else SparseArray(x, fill_value=fill_value)
         for x in to_concat
     ]
 

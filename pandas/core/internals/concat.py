@@ -8,6 +8,7 @@ from pandas._libs import internals as libinternals, tslibs
 from pandas.util._decorators import cache_readonly
 
 from pandas.core.dtypes.cast import maybe_promote
+from pandas.core.arrays.sparse import SparseArray
 from pandas.core.dtypes.common import (
     _get_dtype,
     is_categorical_dtype,
@@ -199,6 +200,8 @@ class JoinUnit:
                     pass
                 elif getattr(self.block, "is_extension", False):
                     pass
+                elif is_sparse(empty_dtype):
+                    return SparseArray(self.shape[1]*fill_value, fill_value=empty_dtype.fill_value)
                 else:
                     missing_arr = np.empty(self.shape, dtype=empty_dtype)
                     missing_arr.fill(fill_value)
@@ -301,6 +304,8 @@ def _get_empty_dtype_and_na(join_units):
         if dtype is None:
             continue
 
+        if is_sparse(dtype):
+            return dtype, dtype.fill_value
         if is_categorical_dtype(dtype):
             upcast_cls = "category"
         elif is_datetime64tz_dtype(dtype):
